@@ -20,9 +20,14 @@ pip install -r requirements.txt
 ```
 uvicorn main:app --reload
 ```
-## 5. Configuración de la base de datos en MySQL:
+## 5. Configuración de la base de datos en MySQL: la base de datos se encuentra dentro de la carpeta (backend) 
    La conexión en la API y base de datos debe contar con el mismo usuario, contraseña y nombre de la base de datos asignados en MySQL
    en este caso.
    
 ![image](https://github.com/user-attachments/assets/0a6a5611-fdaf-4914-b651-6609787d4863)
 
+
+## Si presentas inconvenientes al realizar el procedimiento por favor comunicate conmigo
+  ```
+  Ramón Montesino 3128789705
+  ```
