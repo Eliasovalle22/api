@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../styles/style_login.css">
+
+</head>
+
+<body class="d-flex align-items-center justify-content-center py-4">
+
+    <main class="form-signin text-center">
+        <form>
+            <img class="mb-4" src="https://cdn-icons-png.flaticon.com/512/609/609752.png" alt="" width="72"
+                height="72" />
+            <h1 class="h3 mb-3 fw-normal">Inicie sesión</h1>
+
+            <div class="form-floating mb-3">
+                <input id="email" type="email" class="form-control" placeholder="name@example.com" />
+                <label for="email">Email</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input id="password" type="password" class="form-control" placeholder="Password" />
+                <label for="password">Password</label>
+            </div>
+
+            <div class="form-check text-start my-3">
+                <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" />
+                <label class="form-check-label" for="flexCheckDefault">
+                    Recordarme
+                </label>
+            </div>
+            <button id="btnEntrar" class="btn btn-primary w-100 py-2" type="submit">
+                Ingresar
+            </button>
+            <p class="footer mt-5 mb-3">&copy; Ramón Montesino - Darwin Mercado</p>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('btnEntrar').addEventListener('click', function (e) {
+            e.preventDefault();
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value;
+
+            axios({
+                method: 'post',
+                url: 'http://127.0.0.1:8000/login',
+                data: {
+                    'email': email,
+                    'password': password
+                }
+            }).then(function (response) {
+                if (response.data.message === 'Usuario autenticado correctamente') {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('Usuario o contraseña incorrectos');
+                }
+            }).catch(function (error) {
+                if (error.response && error.response.data && error.response.data.detail) {
+                    alert('Error: ' + error.response.data.detail);
+                } else {
+                    alert('Error desconocido: ' + JSON.stringify(error.response));
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

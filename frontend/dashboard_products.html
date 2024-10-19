@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Productos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../styles/style_dash.css" />
+</head>
+
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white p-3" style="width: 280px; min-height: 100vh;">
+            <h2 class="text-center">CafeJardín</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="dashboard_products.html">
+                        <i class="fas fa-box-open"></i> Productos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="dashboard.html">
+                        <i class="fas fa-users"></i> Usuarios
+                    </a>
+                </li>
+            </ul>
+            <hr />
+            <a href="login.html" class="nav-link text-white">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="container mt-5">
+            <h2 class="mb-4">Lista de Productos</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal"
+                onclick="resetAddProductForm()">Agregar Producto</button>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTable">
+                    <!-- Aquí se cargarán los datos de los productos -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para editar producto -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Editar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <input type="hidden" id="editProductId" />
+                        <div class="mb-3">
+                            <label for="editNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editNombre" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPrecio" class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="editPrecio" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="actualizarProducto()">Guardar
+                        cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar producto -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Agregar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm">
+                        <div class="mb-3">
+                            <label for="addNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="addNombre" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPrecio" class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="addPrecio" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success" onclick="agregarProducto()">Agregar Producto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Función para cargar los productos desde el backend
+        function cargarProductos() {
+            axios
+                .get("http://127.0.0.1:8000/products")
+                .then(function (response) {
+                    const products = response.data;
+                    let tableContent = "";
+                    products.forEach((product) => {
+                        tableContent += `
+                            <tr>
+                                <td>${product.id}</td>
+                                <td>${product.nombre}</td>
+                                <td>${product.precio}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editarProducto(${product.id}, '${product.nombre}', ${product.precio})">Editar</button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${product.id})">Eliminar</button>
+                                </td>
+                            </tr>`;
+                    });
+                    document.getElementById("productsTable").innerHTML = tableContent;
+                })
+                .catch(function (error) {
+                    console.error("Error al cargar los productos:", error);
+                });
+        }
+
+        // Llamamos a la función para cargar los productos cuando se cargue la página
+        window.onload = cargarProductos;
+
+        // Función para cargar los datos del producto seleccionado en el modal
+        function editarProducto(productId, nombre, precio) {
+            document.getElementById("editProductId").value = productId;
+            document.getElementById("editNombre").value = nombre;
+            document.getElementById("editPrecio").value = precio;
+            const editModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+            editModal.show();
+        }
+
+        // Función para actualizar el producto
+        function actualizarProducto() {
+            const productId = document.getElementById("editProductId").value;
+            const nombre = document.getElementById("editNombre").value;
+            let precio = document.getElementById("editPrecio").value;  
+            // Convertimos a número decimal
+            precio = parseFloat(precio).toFixed(2);
+
+            // Validar que el precio es un número válido
+            if (isNaN(precio) || precio <= 0) {
+                alert("Por favor ingresa un precio válido mayor que 0.");
+                return;
+            }
+
+            axios
+                .put(`http://127.0.0.1:8000/products/${productId}`, {
+                    nombre: nombre,
+                    precio: parseFloat(precio) // Aseguramos que precio sea enviado como un número decimal
+                })
+                .then(function (response) {
+                    alert("Producto actualizado correctamente");
+                    cargarProductos();
+
+                    // Cerrar el modal correctamente
+                    const modalElement = document.getElementById('editProductModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    modalInstance.hide();
+                })
+                .catch(function (error) {
+                    console.error("Error al actualizar el producto:", error);
+                });
+        }
+
+
+
+        // Función para agregar un nuevo producto
+        function agregarProducto() {
+            const nombre = document.getElementById("addNombre").value;
+            const precio = parseFloat(document.getElementById("addPrecio").value).toFixed(2);  // Asegurarse de enviar un número con decimales
+
+            // Validar que el precio es un número válido
+            if (isNaN(precio) || precio <= 0) {
+                alert("Por favor ingresa un precio válido mayor que 0.");
+                return;
+            }
+
+            axios
+                .post("http://127.0.0.1:8000/products", {
+                    nombre: nombre,
+                    precio: precio
+                })
+                .then(function (response) {
+                    alert("Producto agregado correctamente");
+                    cargarProductos();
+
+                    // Cerrar el modal correctamente
+                    const modalElement = document.getElementById('addProductModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    modalInstance.hide();
+
+                    // Restablecer los campos del formulario
+                    resetAddProductForm();
+                })
+                .catch(function (error) {
+                    console.error("Error al agregar el producto:", error);
+                });
+        }
+
+        // Función para restablecer el formulario de agregar producto
+        function resetAddProductForm() {
+            document.getElementById("addProductForm").reset();
+        }
+
+        // Función para eliminar un producto
+        function eliminarProducto(productId) {
+            if (confirm("¿Estás seguro de eliminar este producto?")) {
+                axios
+                    .delete(`http://127.0.0.1:8000/products/${productId}`)
+                    .then(function (response) {
+                        alert("Producto eliminado correctamente");
+                        cargarProductos();
+                    })
+                    .catch(function (error) {
+                        console.error("Error al eliminar el producto:", error);
+                    });
+            }
+        }
+    </script>
+
+</body>
+
+</html>

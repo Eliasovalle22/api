@@ -1,0 +1,81 @@
+/* Configuración general y fondo */
+html,
+body {
+    height: 100%;
+    background: linear-gradient(135deg, #949dac, #7b9494); /* Degradado de fondo */
+    font-family: 'Arial', sans-serif;
+}
+
+.form-signin {
+    max-width: 380px;
+    padding: 80px;
+    background-color: #e2ddddc2; /* Fondo del formulario */
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: all 0.3s ease;
+}
+
+.form-signin:hover {
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2); /* Sombra más fuerte al hacer hover */
+}
+
+/* Campos de email y password con tamaño modificable */
+.form-signin input[type="email"],
+.form-signin input[type="password"] {
+    border-radius: 25px; /* Bordes redondeados */
+    padding: 15px;
+    font-size: 16px;
+    background-color: #f1f1f1; /* Color de fondo de los inputs */
+    border: none;
+    transition: all 0.3s ease;
+    width: 100%; /* Puedes ajustar este ancho según tus necesidades */
+    height: 60px; /* Ajusta la altura según lo que prefieras */
+}
+
+.form-signin input[type="email"]:focus,
+.form-signin input[type="password"]:focus {
+    background-color: #fff; /* Fondo blanco al hacer foco */
+    border: 2px solid #5bc0be; /* Borde destacado */
+}
+
+/* Estilo del botón de ingreso con tamaño personalizable */
+.btn-primary {
+    background-color: #0d2137;
+    border-radius: 25px;
+    font-size: 18px;
+    border: none;
+    transition: all 0.3s ease;
+    width: 100%; /* Ajusta el ancho del botón */
+    height: 50px; /* Ajusta la altura del botón */
+}
+
+.btn-primary:hover {
+    background-color: #5bc0be; /* Cambio de color al hacer hover */
+    transform: scale(1.05); /* Efecto de zoom al hacer hover */
+}
+
+/* Estilos de texto */
+h1 {
+    color: #0d2137;
+    font-weight: 700;
+}
+
+.text-body-secondary {
+    color: #6c757d;
+}
+
+/* Ajustes de etiquetas flotantes */
+.form-floating label {
+    color: #0d2137;
+}
+
+.form-check-label {
+    color: #0d2137;
+}
+
+/* Estilos para el footer */
+.footer {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}

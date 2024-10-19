@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Usuarios</title>
+    <!-- Incluir Font Awesome para los iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../styles/style_dash.css" />
+</head>
+
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white p-3" style="width: 280px; min-height: 100vh;">
+            <h2 class="text-center">CafeJardín</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="dashboard.html">
+                        <i class="fas fa-users"></i> Usuarios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="dashboard_products.html">
+                        <i class="fas fa-box-open"></i> Productos
+                    </a>
+                </li>
+            </ul>
+            <hr />
+            <a href="login.html" class="nav-link text-white">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="container mt-5">
+            <h2 class="mb-4">Lista de Usuarios</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal"
+                onclick="resetAddUserForm()">Agregar Usuario</button>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable">
+                    <!-- Aquí se cargarán los datos de los usuarios -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Editar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId" />
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPassword" class="form-label">Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="editPassword" />
+                                <span class="input-group-text">
+                                    <i class="fas fa-eye" id="toggleEditPassword" style="cursor: pointer;"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="actualizarUsuario()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar usuario -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Agregar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label for="addEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="addEmail" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPassword" class="form-label">Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="addPassword" />
+                                <span class="input-group-text">
+                                    <i class="fas fa-eye" id="toggleAddPassword" style="cursor: pointer;"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success" onclick="agregarUsuario()">Agregar Usuario</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Función para cargar los usuarios desde el backend
+        function cargarUsuarios() {
+            axios
+                .get("http://127.0.0.1:8000/users")
+                .then(function (response) {
+                    const users = response.data;
+                    let tableContent = "";
+                    users.forEach((user) => {
+                        tableContent += `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.email}</td>
+                                <td>********</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(${user.id}, '${user.email}', '${user.password}')">Editar</button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${user.id})">Eliminar</button>
+                                </td>
+                            </tr>`;
+                    });
+                    document.getElementById("usersTable").innerHTML = tableContent;
+                })
+                .catch(function (error) {
+                    console.error("Error al cargar los usuarios:", error);
+                });
+        }
+
+        // Llamamos a la función para cargar los usuarios cuando se cargue la página
+        window.onload = cargarUsuarios;
+
+        // Función para cargar los datos del usuario seleccionado en el modal
+        function editarUsuario(userId, email, password) {
+            document.getElementById("editUserId").value = userId;
+            document.getElementById("editEmail").value = email;
+            document.getElementById("editPassword").value = password;
+            const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            editModal.show();
+        }
+
+        // Validación del correo electrónico
+        function validarEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Validación de la contraseña (mínimo 8 caracteres, al menos una letra y un número)
+        function validarPassword(password) {
+            const re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+            return re.test(String(password));
+        }
+
+        // Función para actualizar el usuario
+        function actualizarUsuario() {
+            const userId = document.getElementById("editUserId").value;
+            const email = document.getElementById("editEmail").value;
+            const password = document.getElementById("editPassword").value;
+
+            // Validación en tiempo real
+            if (!validarEmail(email)) {
+                alert("Por favor ingrese un correo electrónico válido.");
+                return;
+            }
+
+            if (!validarPassword(password)) {
+                alert("La contraseña debe tener al menos 8 caracteres y contener al menos una letra y un número.");
+                return;
+            }
+
+            axios
+                .put(`http://127.0.0.1:8000/users/${userId}`, {
+                    email: email,
+                    password: password
+                })
+                .then(function (response) {
+                    alert("Usuario actualizado correctamente");
+                    cargarUsuarios();
+
+                    // Cerrar el modal correctamente
+                    const modalElement = document.getElementById('editUserModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    modalInstance.hide();
+                })
+                .catch(function (error) {
+                    console.error("Error al actualizar el usuario:", error);
+                });
+        }
+
+        // Función para agregar un nuevo usuario
+        function agregarUsuario() {
+            const email = document.getElementById("addEmail").value;
+            const password = document.getElementById("addPassword").value;
+
+            // Validación en tiempo real
+            if (!validarEmail(email)) {
+                alert("Por favor ingrese un correo electrónico válido.");
+                return;
+            }
+
+            if (!validarPassword(password)) {
+                alert("La contraseña debe tener al menos 8 caracteres y contener al menos una letra y un número.");
+                return;
+            }
+
+            axios
+                .post("http://127.0.0.1:8000/users", {
+                    email: email,
+                    password: password
+                })
+                .then(function (response) {
+                    alert("Usuario agregado correctamente");
+                    cargarUsuarios();
+
+                    // Cerrar el modal correctamente
+                    const modalElement = document.getElementById('addUserModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    modalInstance.hide();
+
+                    // Restablecer los campos de entrada después de agregar un usuario
+                    resetAddUserForm();
+                })
+                .catch(function (error) {
+                    console.error("Error al agregar el usuario:", error);
+                });
+        }
+
+        // Función para restablecer el formulario de agregar usuario
+        function resetAddUserForm() {
+            document.getElementById("addUserForm").reset();
+        }
+
+        // Función para eliminar un usuario
+        function eliminarUsuario(userId) {
+            if (confirm("¿Estás seguro de eliminar este usuario?")) {
+                axios
+                    .delete(`http://127.0.0.1:8000/users/${userId}`)
+                    .then(function (response) {
+                        alert("Usuario eliminado correctamente");
+                        cargarUsuarios();
+                    })
+                    .catch(function (error) {
+                        console.error("Error al eliminar el usuario:", error);
+                    });
+            }
+        }
+
+        // Función para alternar la visibilidad de la contraseña
+        function togglePasswordVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
+            }
+        }
+
+        // Event listeners para los íconos de mostrar/ocultar contraseña
+        document.getElementById('toggleEditPassword').addEventListener('click', function () {
+            togglePasswordVisibility('editPassword', 'toggleEditPassword');
+        });
+
+        document.getElementById('toggleAddPassword').addEventListener('click', function () {
+            togglePasswordVisibility('addPassword', 'toggleAddPassword');
+        });
+    </script>
+
+</body>
+
+</html>
