@@ -1,4 +1,7 @@
-Esta api esta creada utilizando FastAPI, middleware, pydantic, Boostrap, Css, Javascrip
+# Integrantes del grupo: 
+Ramón Montesino, Darwin Mercado
+
+Esta api esta creada utilizando FastAPI, middleware, pydantic,HTML, Boostrap, Css, Javascrip
 # Pasos para que funcione correctamente nuestra API
 
 ## 1. Descargar la carpeta comprimida:
