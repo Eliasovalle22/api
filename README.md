@@ -41,6 +41,13 @@ uvicorn main:app --reload
 
 ![image](https://github.com/user-attachments/assets/faea5c0c-e495-4444-9c54-f63adc80fdfa)
 
+## 9. Base de datos Usuarios
+
+![image](https://github.com/user-attachments/assets/de45df35-3423-4119-aa6b-c119b9e79df6)
+
+## 10. Base de datos Productos
+
+![image](https://github.com/user-attachments/assets/9f39703a-f5d5-40f3-bb40-cb518784d60d)
 
 
 ## Si presentas inconvenientes al realizar el procedimiento por favor comunicate conmigo
