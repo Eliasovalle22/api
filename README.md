@@ -31,21 +31,26 @@ uvicorn main:app --reload
 
 ## 6. Login
 
+
 ![image](https://github.com/user-attachments/assets/1fb8b35b-2b94-4c8d-8c8a-ebbbd7d14f4b)
 
 ## 7. Dashboard Usuarios
+
 
 ![image](https://github.com/user-attachments/assets/f59d1bcd-e7d0-4a32-a9d4-1781eb2ab9a8)
 
 ## 8. Dashboard Productos
 
+
 ![image](https://github.com/user-attachments/assets/faea5c0c-e495-4444-9c54-f63adc80fdfa)
 
 ## 9. Base de datos Usuarios
 
+
 ![image](https://github.com/user-attachments/assets/de45df35-3423-4119-aa6b-c119b9e79df6)
 
 ## 10. Base de datos Productos
+
 
 ![image](https://github.com/user-attachments/assets/9f39703a-f5d5-40f3-bb40-cb518784d60d)
 
