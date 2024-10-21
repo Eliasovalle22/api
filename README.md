@@ -1,5 +1,5 @@
 # Integrantes del grupo: 
-Ramón Montesino, Darwin Mercado
+## Ramón Montesino, Darwin Mercado
 
 Esta api esta creada utilizando FastAPI, middleware, pydantic,HTML, Boostrap, Css, Javascrip
 # Pasos para que funcione correctamente nuestra API
