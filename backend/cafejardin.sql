@@ -38,7 +38,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'coca - cola',3200,'2024-10-18 22:35:06','2024-10-18 22:35:06'),(2,'papa  de pollo',2800,'2024-10-18 22:35:30','2024-10-19 10:00:32'),(3,'Sprite',3500,'2024-10-18 22:43:13','2024-10-18 22:43:25'),(5,'Empanada de pollo',2800,'2024-10-19 09:58:35','2024-10-19 09:58:35'),(6,'Empanada de carne',2800,'2024-10-19 09:58:52','2024-10-19 09:58:52'),(7,'Empanada de queso',3000,'2024-10-19 09:59:11','2024-10-19 09:59:11'),(8,'Empanada de jamón',3500,'2024-10-19 09:59:33','2024-10-19 09:59:33'),(9,'Patacón de pollo',3800,'2024-10-19 10:00:02','2024-10-19 10:00:02'),(10,'Patacón de carne',3800,'2024-10-19 10:00:13','2024-10-19 10:00:13');
+INSERT INTO `products` VALUES (1,'coca - cola',3500,'2024-10-18 22:35:06','2024-10-19 12:32:34'),(2,'papa  de pollo',2800,'2024-10-18 22:35:30','2024-10-19 10:00:32'),(3,'Sprite',3500,'2024-10-18 22:43:13','2024-10-18 22:43:25'),(5,'Empanada de pollo',2800,'2024-10-19 09:58:35','2024-10-19 09:58:35'),(6,'Empanada de carne',2800,'2024-10-19 09:58:52','2024-10-19 09:58:52'),(7,'Empanada de queso',3000,'2024-10-19 09:59:11','2024-10-19 09:59:11'),(8,'Empanada de jamón',3500,'2024-10-19 09:59:33','2024-10-19 09:59:33'),(9,'Patacón de pollo',3800,'2024-10-19 10:00:02','2024-10-19 10:00:02'),(10,'Patacón de carne',3800,'2024-10-19 10:00:13','2024-10-19 10:00:13');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -56,7 +56,7 @@ CREATE TABLE `users` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +65,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'ramon@ul.edu.co','ramon2805*','2024-10-18 22:33:48','2024-10-18 22:34:36'),(2,'dalgis2024@ul.edu.co','Dalgis2805*','2024-10-18 22:41:35','2024-10-19 09:52:18'),(4,'moises@ul.edu.co','Moises2347','2024-10-19 09:51:49','2024-10-19 09:51:49'),(5,'darwin@ul.edu.co','Darwin324*','2024-10-19 09:53:37','2024-10-19 09:53:37'),(6,'yolanda@ul.edu.co','Yoli239*','2024-10-19 09:54:05','2024-10-19 09:54:05'),(7,'Jair2099@ul.edu.co','2099Jair@','2024-10-19 09:55:07','2024-10-19 09:55:07'),(8,'saraymont7@ul.edu.co','Sara992*','2024-10-19 09:56:20','2024-10-19 09:56:20'),(9,'camilomercado@ul.edu.co','cam2024@','2024-10-19 09:56:52','2024-10-19 09:56:52'),(10,'cafejardin@ul.edu.co','Cafeja2024','2024-10-19 09:57:23','2024-10-19 09:57:23');
+INSERT INTO `users` VALUES (1,'ramon@ul.edu.co','ramon2805*','2024-10-18 22:33:48','2024-10-18 22:34:36'),(2,'dalgis2024@ul.edu.co','Dalgis2805*','2024-10-18 22:41:35','2024-10-19 09:52:18'),(4,'moises@ul.edu.co','Moises2347','2024-10-19 09:51:49','2024-10-19 09:51:49'),(5,'darwin@ul.edu.co','$2b$12$U8tJRBe0KWh1RgGKhEiEfu6awHBhKWAur8gDSEQZK7BtDZQJ2K0Y2','2024-10-19 09:53:37','2024-11-23 22:36:39'),(6,'yolanda@ul.edu.co','Yoli239*','2024-10-19 09:54:05','2024-10-19 09:54:05'),(7,'Jair2099@ul.edu.co','2099Jair@','2024-10-19 09:55:07','2024-10-19 09:55:07'),(8,'saraymont7@ul.edu.co','Sara992*','2024-10-19 09:56:20','2024-10-19 09:56:20'),(9,'camilomercado@ul.edu.co','cam2024@','2024-10-19 09:56:52','2024-10-19 09:56:52'),(10,'cafejardin@ul.edu.co','Cafeja2024','2024-10-19 09:57:23','2024-10-19 09:57:23'),(11,'oscarito@gmail.com','eqwdfaq2','2024-10-19 12:32:56','2024-10-19 12:32:56'),(12,'sqlachemy@test.com','prueba321**','2024-11-23 22:11:57','2024-11-23 22:11:57'),(13,'achemy@gmail.com','$2b$12$MlrMOPTjEdqd5MMvPhMP6ulPxOmpyQ09gnlUgYxQZcHf2oaGVggLu','2024-11-23 22:21:43','2024-11-23 22:21:43'),(14,'pruebacontra@gmail.com','$2b$12$760wDP0N1CBpgs2z.1MrPuGNsgHgENt0AoFcv2VygHjn/Us/WyJjC','2024-11-23 22:25:04','2024-11-23 22:25:04'),(15,'ramonovalle@achemy.com','$2b$12$PqW2A80p12T8t83UrI8w7OHWWo2U3k6YNBrybjBVHNlKs5LEC1i9O','2024-11-23 22:29:16','2024-11-23 22:29:16'),(16,'utima@achemy.com','$2b$12$PeMRAtUDrXmqAscfCLqYYeal/5RPi4Rj0ErMIKpWEL2jlR1ggaH8e','2024-11-23 22:34:24','2024-11-23 22:34:24');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -78,4 +78,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-19 10:56:49
+-- Dump completed on 2024-11-23 23:41:27
