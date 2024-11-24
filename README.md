@@ -49,7 +49,8 @@ uvicorn main:app --reload
 ## 9. Base de datos Usuarios
 
 
-![image](https://github.com/user-attachments/assets/de45df35-3423-4119-aa6b-c119b9e79df6)
+![image](https://github.com/user-attachments/assets/b39d09d7-d14d-4e63-b9c3-6cbae9c0fd13)
+
 
 ## 10. Base de datos Productos
 
