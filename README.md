@@ -2,7 +2,7 @@
 
 Esta api esta creada utilizando FastAPI, middleware, pydantic,HTML, Boostrap, Css, Javascrip.
 
-#Nueva implementacion realizada, SQLAlchemy
+# Nueva implementacion realizada, SQLAlchemy
 # Pasos para que funcione correctamente nuestra API
 
 ## 1. Descargar la carpeta comprimida:
