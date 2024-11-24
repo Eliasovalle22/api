@@ -28,7 +28,8 @@ uvicorn main:app --reload
    La conexión en la API y base de datos debe contar con el mismo usuario, contraseña y nombre de la base de datos asignados en MySQL
    en este caso.
    
-![image](https://github.com/user-attachments/assets/0a6a5611-fdaf-4914-b651-6609787d4863)
+![image](https://github.com/user-attachments/assets/1a160037-5b15-49e8-a0e5-a6f2b4b4f404)
+
 
 ## 6. Login
 
