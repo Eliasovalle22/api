@@ -46,7 +46,7 @@ uvicorn main:app --reload
 
 ![image](https://github.com/user-attachments/assets/faea5c0c-e495-4444-9c54-f63adc80fdfa)
 
-## 9. Base de datos Usuarios
+## 9. Base de datos Usuarios, con las contraseñas encriptadas
 
 
 ![image](https://github.com/user-attachments/assets/b39d09d7-d14d-4e63-b9c3-6cbae9c0fd13)
