@@ -1,6 +1,5 @@
-from pydantic import BaseModel, Field, condecimal
-from decimal import Decimal
+from pydantic import BaseModel, Field
 
 class Product(BaseModel):
     nombre: str = Field(..., min_length=2, max_length=50)
-    precio: Decimal = condecimal(gt=0, decimal_places=2)
+    precio: float = Field(..., gt=0)  # Cambiar Decimal por float

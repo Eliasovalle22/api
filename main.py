@@ -1,242 +1,134 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-import mysql.connector
-from backend.connection import connection
-from models.users import User
-from models.products import Product
+from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy.orm import Session
+from backend.connection import get_db
+from models.sqlalchemy_users import User as UserSQL
+from models.sqlalchemy_products import Product as ProductSQL
+from models.products import Product as ProductPydantic  # Modelo Pydantic
+from models.users import User as UserPydantic  # Modelo Pydantic para validaciones
+from passlib.context import CryptContext
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Crear un usuario
+@app.post("/users")
+async def create_user(user: UserPydantic, db: Session = Depends(get_db)):
+    # Validar si el usuario ya existe
+    db_user = db.query(UserSQL).filter(UserSQL.email == user.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="El correo ya está registrado")
+
+    # Hashear la contraseña antes de guardarla
+    hashed_password = pwd_context.hash(user.password)
+
+    # Crear usuario con contraseña hasheada
+    new_user = UserSQL(email=user.email, password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"id": new_user.id, "email": new_user.email}
+
+# Obtener un usuario por ID
+@app.get("/users/{user_id}")
+async def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(UserSQL).filter(UserSQL.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return {"id": user.id, "email": user.email}
 
 # Listar usuarios
-@app.get('/users')
-async def get_users():
-    cursor = connection.cursor(dictionary=True)
-    query = 'SELECT * FROM users'
+@app.get("/users")
+async def list_users(db: Session = Depends(get_db)):
+    users = db.query(UserSQL).all()
+    return [{"id": user.id, "email": user.email} for user in users]
 
-    try:
-        cursor.execute(query)
-        users = cursor.fetchall()
-        return users
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al obtener los usuarios: {err}")
-    finally:
-        cursor.close()
+# Actualizar usuario
+@app.put("/users/{user_id}")
+async def update_user(user_id: int, user: UserPydantic, db: Session = Depends(get_db)):
+    db_user = db.query(UserSQL).filter(UserSQL.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-# Listar usuarios por id
-@app.get('/users/{user_id}')
-async def get_user(user_id: int):
-    cursor = connection.cursor(dictionary=True)
-    query = 'SELECT * FROM users WHERE id = %s'
-    values = (user_id,)
+    db_user.email = user.email
 
-    try:
-        cursor.execute(query, values)
-        user = cursor.fetchone()
-        if user:
-            return user
-        else:
-            raise HTTPException(
-                status_code=404, detail=f"Usuario con id {user_id} no encontrado")
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al obtener el usuario: {err}")
-    finally:
-        cursor.close()
+    # Hashear la nueva contraseña antes de guardarla
+    db_user.password = pwd_context.hash(user.password)
+    
+    db.commit()
+    return {"message": "Usuario actualizado correctamente"}
+
+# Eliminar usuario
+@app.delete("/users/{user_id}")
+async def delete_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(UserSQL).filter(UserSQL.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    db.delete(db_user)
+    db.commit()
+    return {"message": "Usuario eliminado correctamente"}
 
 
-# crear usuarios
-@app.post('/users')
-async def create_user(user: User):
-    cursor = connection.cursor()
-    query = 'INSERT INTO users (email, password) VALUES (%s, %s)'
-    values = (user.email, user.password)
-
-    try:
-        cursor.execute(query, values)
-        connection.commit()
-        return {"message": "Usuario creado correctamente"}
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al crear el usuario: {err}")
-    except ValueError as err:
-        raise HTTPException(
-            status_code=400, detail=f"Error en los valores: {err}")
-    finally:
-        cursor.close()
-
-
-# Actualizar usuarios
-@app.put('/users/{user_id}')
-async def update_user(user_id: int, user: User):
-    cursor = connection.cursor()
-    query = 'UPDATE users SET email = %s, password = %s WHERE id = %s'
-    values = (user.email, user.password, user_id)
-
-    try:
-        cursor.execute(query, values)
-        connection.commit()
-        if cursor.rowcount == 0:
-            raise HTTPException(
-                status_code=404, detail=f"Usuario con id {user_id} no encontrado")
-        return {"message": "Usuario actualizado correctamente"}
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al actualizar el usuario: {err}")
-    except ValueError as err:
-        raise HTTPException(
-            status_code=400, detail=f"Error en los valores: {err}")
-    finally:
-        cursor.close()
-
-
-#Eliminar usuarios
-@app.delete('/users/{user_id}')
-async def delete_user(user_id: int):
-    cursor = connection.cursor()
-    query = 'DELETE FROM users WHERE id = %s'
-    values = (user_id,)
-
-    try:
-        cursor.execute(query, values)
-        connection.commit()
-        if cursor.rowcount == 0:
-            raise HTTPException(
-                status_code=404, detail=f"Usuario con id {user_id} no encontrado")
-        return {"message": "Usuario eliminado correctamente"}
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al eliminar el usuario: {err}")
-    finally:
-        cursor.close()
-
+# Crear producto
+@app.post("/products")
+async def create_product(product: ProductPydantic, db: Session = Depends(get_db)):
+    new_product = ProductSQL(nombre=product.nombre, precio=product.precio)
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
+    return {"id": new_product.id, "nombre": new_product.nombre, "precio": new_product.precio}
 
 # Listar productos
-@app.get('/products')
-async def get_products():
-    cursor = connection.cursor(dictionary=True)
-    query = 'SELECT * FROM products'
+@app.get("/products")
+async def list_products(db: Session = Depends(get_db)):
+    products = db.query(ProductSQL).all()
+    return [{"id": product.id, "nombre": product.nombre, "precio": product.precio} for product in products]
 
-    try:
-        cursor.execute(query)
-        products = cursor.fetchall()
-        return products
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al obtener los productos: {err}")
-    finally:
-        cursor.close()
-        
-# listar productos por id
-@app.get('/products/{products_id}')
-async def get_product(products_id: int):
-    cursor = connection.cursor(dictionary=True)
-    query = 'SELECT * FROM products WHERE id = %s'
-    values = (products_id,)
+# Obtener producto por ID
+@app.get("/products/{product_id}")
+async def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(ProductSQL).filter(ProductSQL.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    return {"id": product.id, "nombre": product.nombre, "precio": product.precio}
 
-    try:
-        cursor.execute(query, values)
-        products = cursor.fetchone()
-        if products:
-            return products
-        else:
-            raise HTTPException(
-                status_code=404, detail=f"producto con id {products_id} no encontrado")
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al obtener el producto: {err}")
-    finally:
-        cursor.close()
+# Actualizar producto
+@app.put("/products/{product_id}")
+async def update_product(product_id: int, product: ProductPydantic, db: Session = Depends(get_db)):
+    db_product = db.query(ProductSQL).filter(ProductSQL.id == product_id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-# crear productos
-@app.post('/products')
-async def create_product(products: Product):
-    cursor = connection.cursor()
-    query = 'INSERT INTO products (nombre, precio) VALUES (%s, %s)'
-    values = (products.nombre, products.precio)
+    db_product.nombre = product.nombre
+    db_product.precio = product.precio
+    db.commit()
+    return {"message": "Producto actualizado correctamente"}
 
-    try:
-        cursor.execute(query, values)
-        connection.commit()
-        return {"message": "Producto creado correctamente"}
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al crear el Producto: {err}")
-    except ValueError as err:
-        raise HTTPException(
-            status_code=400, detail=f"Error en los valores: {err}")
-    finally:
-        cursor.close()
+# Eliminar producto
+@app.delete("/products/{product_id}")
+async def delete_product(product_id: int, db: Session = Depends(get_db)):
+    db_product = db.query(ProductSQL).filter(ProductSQL.id == product_id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-# Actualizar productos
-@app.put('/products/{products_id}')
-async def update_product(products_id: int, products: Product):
-    cursor = connection.cursor()
-    query = 'UPDATE products SET nombre = %s, precio = %s WHERE id = %s'
-    values = (products.nombre, products.precio, products_id)
-
-    try:
-        cursor.execute(query, values)
-        connection.commit()
-        if cursor.rowcount == 0:
-            raise HTTPException(
-                status_code=404, detail=f"producto con id {products_id} no encontrado")
-        return {"message": "producto actualizado correctamente"}
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al actualizar el producto: {err}")
-    except ValueError as err:
-        raise HTTPException(
-            status_code=400, detail=f"Error en los valores: {err}")
-    finally:
-        cursor.close()
-
-#Eliminar productos
-@app.delete('/products/{products_id}')
-async def delete_product(products_id: int):
-    cursor = connection.cursor()
-    query = 'DELETE FROM products WHERE id = %s'
-    values = (products_id,)
-
-    try:
-        cursor.execute(query, values)
-        connection.commit()
-        if cursor.rowcount == 0:
-            raise HTTPException(
-                status_code=404, detail=f"producto con id {products_id} no encontrado")
-        return {"message": "producto eliminado correctamente"}
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al eliminar el producto: {err}")
-    finally:
-        cursor.close()
+    db.delete(db_product)
+    db.commit()
+    return {"message": "Producto eliminado correctamente"}
         
         
-#ingreso login
+# Verificar contraseña
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
 @app.post('/login')
-def login(user: User):
-    cursor = connection.cursor()
-    query = 'SELECT * FROM users WHERE email = %s AND password = %s'
-    values = (user.email, user.password)
+def login(user: UserPydantic, db: Session = Depends(get_db)):
+    # Buscar usuario por correo electrónico
+    db_user = db.query(UserSQL).filter(UserSQL.email == user.email).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    try:
-        cursor.execute(query, values)
-        user = cursor.fetchone()
-        if user:
-            return {"message": "Usuario autenticado correctamente"}
-        else:
-            raise HTTPException(
-                status_code=404, detail="Usuario no encontrado contraseña incorrecta")
-    except mysql.connector.Error as err:
-        raise HTTPException(
-            status_code=500, detail=f"Error al autenticar el usuario: {err}")
-    finally:
-        cursor.close()
+    # Verificar la contraseña
+    if not verify_password(user.password, db_user.password):
+        raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+
+    return {"message": "Usuario autenticado correctamente"}
